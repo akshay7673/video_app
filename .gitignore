@@ -1,0 +1,31 @@
+# Ignore virtual environments
+venv/
+
+# Ignore Python cache files
+__pycache__/
+*.pyc
+
+# Ignore log files
+*.log
+
+# Ignore environment variables file
+.env
+
+# Ignore system files and directories
+AppData/
+*.exe
+*.msi
+*.tmp
+*.dat
+*.ini
+
+# Ignore user profile directories
+Contacts/
+Desktop/
+Documents/
+Downloads/
+Favorites/
+Music/
+Pictures/
+Videos/
+OneDrive/
