@@ -71,6 +71,17 @@
         <button onclick="listVideos()">Get Videos</button>
     </section>
 
+    <section id="rate-videos">
+        <h2>Rate a Video</h2>
+        <label>JWT Token:</label>
+        <textarea id="rate-jwt-token" rows="4" cols="50" placeholder="Paste your JWT token here"></textarea>
+        <label>Video ID:</label>
+        <input type="number" id="video-id" placeholder="Enter Video ID">
+        <label>Rating (0-5):</label>
+        <input type="number" id="video-rating" min="0" max="5" step="0.1">
+        <button onclick="rateVideo()">Rate Video</button>
+    </section>
+
     <section id="response">
         <h2>Response</h2>
         <div id="response-output" class="response"></div>
@@ -130,6 +141,24 @@
             const response = await fetch(`${baseUrl}/videos`, {
                 method: "GET",
                 headers: { "x-access-token": token }
+            });
+
+            const data = await response.json();
+            document.getElementById("response-output").innerText = JSON.stringify(data, null, 2);
+        }
+
+        async function rateVideo() {
+            const token = document.getElementById("rate-jwt-token").value;
+            const id = document.getElementById("video-id").value;
+            const rating = document.getElementById("video-rating").value;
+
+            const response = await fetch(`${baseUrl}/videos/rate`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "x-access-token": token
+                },
+                body: JSON.stringify({ id: parseInt(id), rating: parseFloat(rating) })
             });
 
             const data = await response.json();
