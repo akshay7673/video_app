@@ -53,6 +53,17 @@
         <button onclick="loginUser()">Login</button>
     </section>
 
+    <section id="upload-videos">
+        <h2>Upload Video</h2>
+        <label>JWT Token:</label>
+        <textarea id="upload-jwt-token" rows="4" cols="50" placeholder="Paste your JWT token here"></textarea>
+        <label>Video Title:</label>
+        <input type="text" id="video-title">
+        <label>Genre:</label>
+        <input type="text" id="video-genre">
+        <button onclick="uploadVideo()">Upload Video</button>
+    </section>
+
     <section id="videos">
         <h2>View Videos</h2>
         <label>JWT Token:</label>
@@ -95,6 +106,24 @@
             document.getElementById("response-output").innerText = JSON.stringify(data, null, 2);
         }
 
+        async function uploadVideo() {
+            const token = document.getElementById("upload-jwt-token").value;
+            const title = document.getElementById("video-title").value;
+            const genre = document.getElementById("video-genre").value;
+
+            const response = await fetch(`${baseUrl}/videos`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "x-access-token": token
+                },
+                body: JSON.stringify({ title, genre })
+            });
+
+            const data = await response.json();
+            document.getElementById("response-output").innerText = JSON.stringify(data, null, 2);
+        }
+
         async function listVideos() {
             const token = document.getElementById("jwt-token").value;
 
@@ -109,4 +138,3 @@
     </script>
 </body>
 </html>
-
