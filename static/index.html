@@ -13,10 +13,13 @@
             display: block;
             margin-top: 10px;
         }
-        input, button {
+        input, button, textarea {
             margin-top: 5px;
             padding: 5px;
             width: 300px;
+        }
+        textarea {
+            width: 100%;
         }
         .response {
             margin-top: 20px;
@@ -48,6 +51,13 @@
         <label>Password:</label>
         <input type="password" id="login-password">
         <button onclick="loginUser()">Login</button>
+    </section>
+
+    <section id="videos">
+        <h2>View Videos</h2>
+        <label>JWT Token:</label>
+        <textarea id="jwt-token" rows="4" cols="50" placeholder="Paste your JWT token here"></textarea>
+        <button onclick="listVideos()">Get Videos</button>
     </section>
 
     <section id="response">
@@ -84,6 +94,19 @@
             const data = await response.json();
             document.getElementById("response-output").innerText = JSON.stringify(data, null, 2);
         }
+
+        async function listVideos() {
+            const token = document.getElementById("jwt-token").value;
+
+            const response = await fetch(`${baseUrl}/videos`, {
+                method: "GET",
+                headers: { "x-access-token": token }
+            });
+
+            const data = await response.json();
+            document.getElementById("response-output").innerText = JSON.stringify(data, null, 2);
+        }
     </script>
 </body>
 </html>
+
