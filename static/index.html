@@ -4,88 +4,105 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Video App</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <style>
         body {
+            background-color: #181818;
+            color: #fff;
             font-family: Arial, sans-serif;
-            margin: 20px;
+            padding: 20px;
         }
-        label {
-            display: block;
+        h1, h2 {
+            text-align: center;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+        }
+        .btn-primary {
             margin-top: 10px;
-        }
-        input, button, textarea {
-            margin-top: 5px;
-            padding: 5px;
-            width: 300px;
-        }
-        textarea {
             width: 100%;
         }
-        .response {
+        textarea, input, button {
+            margin-top: 10px;
+            width: 100%;
+        }
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
             margin-top: 20px;
+        }
+        .video-item {
+            text-align: center;
+            background: #222;
             padding: 10px;
-            border: 1px solid #ccc;
-            background-color: #f9f9f9;
-            max-width: 500px;
+            border-radius: 8px;
+        }
+        .video-item img {
+            max-width: 100%;
+            border-radius: 8px;
+        }
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 10px 0;
+            background-color: #333;
+            color: #fff;
         }
     </style>
 </head>
 <body>
-    <h1>Video App API Tester</h1>
+    <div class="container">
+        <h1>Video Streaming App</h1>
 
-    <section id="register">
-        <h2>Register User</h2>
-        <label>Username:</label>
-        <input type="text" id="reg-username">
-        <label>Password:</label>
-        <input type="password" id="reg-password">
-        <label>Role:</label>
-        <input type="text" id="reg-role" placeholder="e.g., creator or consumer">
-        <button onclick="registerUser()">Register</button>
-    </section>
+        <section id="register" class="mt-5">
+            <h2>Register User</h2>
+            <input type="text" id="reg-username" class="form-control" placeholder="Username">
+            <input type="password" id="reg-password" class="form-control" placeholder="Password">
+            <input type="text" id="reg-role" class="form-control" placeholder="Role (creator or consumer)">
+            <button onclick="registerUser()" class="btn btn-primary">Register</button>
+        </section>
 
-    <section id="login">
-        <h2>Login</h2>
-        <label>Username:</label>
-        <input type="text" id="login-username">
-        <label>Password:</label>
-        <input type="password" id="login-password">
-        <button onclick="loginUser()">Login</button>
-    </section>
+        <section id="login" class="mt-5">
+            <h2>Login</h2>
+            <input type="text" id="login-username" class="form-control" placeholder="Username">
+            <input type="password" id="login-password" class="form-control" placeholder="Password">
+            <button onclick="loginUser()" class="btn btn-primary">Login</button>
+        </section>
 
-    <section id="upload-videos">
-        <h2>Upload Video</h2>
-        <label>JWT Token:</label>
-        <textarea id="upload-jwt-token" rows="4" cols="50" placeholder="Paste your JWT token here"></textarea>
-        <label>Video Title:</label>
-        <input type="text" id="video-title">
-        <label>Genre:</label>
-        <input type="text" id="video-genre">
-        <button onclick="uploadVideo()">Upload Video</button>
-    </section>
+        <section id="upload-videos" class="mt-5">
+            <h2>Upload Video</h2>
+            <textarea id="upload-jwt-token" class="form-control" rows="3" placeholder="Paste your JWT token"></textarea>
+            <input type="text" id="video-title" class="form-control" placeholder="Video Title">
+            <input type="text" id="video-genre" class="form-control" placeholder="Video Genre">
+            <button onclick="uploadVideo()" class="btn btn-primary">Upload Video</button>
+        </section>
 
-    <section id="videos">
-        <h2>View Videos</h2>
-        <label>JWT Token:</label>
-        <textarea id="jwt-token" rows="4" cols="50" placeholder="Paste your JWT token here"></textarea>
-        <button onclick="listVideos()">Get Videos</button>
-    </section>
+        <section id="videos" class="mt-5">
+            <h2>Available Videos</h2>
+            <textarea id="jwt-token" class="form-control" rows="3" placeholder="Paste your JWT token"></textarea>
+            <button onclick="listVideos()" class="btn btn-primary">Fetch Videos</button>
+            <div class="video-grid" id="video-grid"></div>
+        </section>
 
-    <section id="rate-videos">
-        <h2>Rate a Video</h2>
-        <label>JWT Token:</label>
-        <textarea id="rate-jwt-token" rows="4" cols="50" placeholder="Paste your JWT token here"></textarea>
-        <label>Video ID:</label>
-        <input type="number" id="video-id" placeholder="Enter Video ID">
-        <label>Rating (0-5):</label>
-        <input type="number" id="video-rating" min="0" max="5" step="0.1">
-        <button onclick="rateVideo()">Rate Video</button>
-    </section>
+        <section id="rate-videos" class="mt-5">
+            <h2>Rate a Video</h2>
+            <textarea id="rate-jwt-token" class="form-control" rows="3" placeholder="Paste your JWT token"></textarea>
+            <input type="number" id="video-id" class="form-control" placeholder="Video ID">
+            <input type="number" id="video-rating" class="form-control" min="0" max="5" step="0.1" placeholder="Rating (0-5)">
+            <button onclick="rateVideo()" class="btn btn-primary">Rate Video</button>
+        </section>
 
-    <section id="response">
-        <h2>Response</h2>
-        <div id="response-output" class="response"></div>
-    </section>
+        <section id="response" class="mt-5">
+            <h2>Response</h2>
+            <div id="response-output" class="response bg-light text-dark p-3"></div>
+        </section>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 Video Streaming App</p>
+    </footer>
 
     <script>
         const baseUrl = "https://videoappunique123.azurewebsites.net/api";
@@ -130,7 +147,6 @@
                 },
                 body: JSON.stringify({ title, genre })
             });
-
             const data = await response.json();
             document.getElementById("response-output").innerText = JSON.stringify(data, null, 2);
         }
@@ -142,9 +158,22 @@
                 method: "GET",
                 headers: { "x-access-token": token }
             });
-
             const data = await response.json();
-            document.getElementById("response-output").innerText = JSON.stringify(data, null, 2);
+
+            const videoGrid = document.getElementById("video-grid");
+            videoGrid.innerHTML = "";
+
+            data.videos.forEach(video => {
+                const videoItem = document.createElement("div");
+                videoItem.classList.add("video-item");
+                videoItem.innerHTML = `
+                    <img src="https://via.placeholder.com/150" alt="Thumbnail">
+                    <h5>${video.title}</h5>
+                    <p>${video.genre}</p>
+                    <p>Rating: ${video.rating || "Not Rated"}</p>
+                `;
+                videoGrid.appendChild(videoItem);
+            });
         }
 
         async function rateVideo() {
