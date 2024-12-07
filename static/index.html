@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Video Streaming App</title>
+    <title>Video App</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <style>
         body {
@@ -29,24 +29,19 @@
         }
         .video-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
             gap: 20px;
             margin-top: 20px;
         }
         .video-item {
+            text-align: center;
             background: #222;
-            padding: 15px;
+            padding: 10px;
             border-radius: 8px;
         }
         .video-item img {
             max-width: 100%;
             border-radius: 8px;
-        }
-        .comment-section {
-            margin-top: 10px;
-            padding: 10px;
-            background: #333;
-            border-radius: 5px;
         }
         footer {
             text-align: center;
@@ -61,7 +56,29 @@
     <div class="container">
         <h1>Video Streaming App</h1>
 
-        <!-- Video List Section -->
+        <section id="register" class="mt-5">
+            <h2>Register User</h2>
+            <input type="text" id="reg-username" class="form-control" placeholder="Username">
+            <input type="password" id="reg-password" class="form-control" placeholder="Password">
+            <input type="text" id="reg-role" class="form-control" placeholder="Role (creator or consumer)">
+            <button onclick="registerUser()" class="btn btn-primary">Register</button>
+        </section>
+
+        <section id="login" class="mt-5">
+            <h2>Login</h2>
+            <input type="text" id="login-username" class="form-control" placeholder="Username">
+            <input type="password" id="login-password" class="form-control" placeholder="Password">
+            <button onclick="loginUser()" class="btn btn-primary">Login</button>
+        </section>
+
+        <section id="upload-videos" class="mt-5">
+            <h2>Upload Video</h2>
+            <textarea id="upload-jwt-token" class="form-control" rows="3" placeholder="Paste your JWT token"></textarea>
+            <input type="text" id="video-title" class="form-control" placeholder="Video Title">
+            <input type="text" id="video-genre" class="form-control" placeholder="Video Genre">
+            <button onclick="uploadVideo()" class="btn btn-primary">Upload Video</button>
+        </section>
+
         <section id="videos" class="mt-5">
             <h2>Available Videos</h2>
             <textarea id="jwt-token" class="form-control" rows="3" placeholder="Paste your JWT token"></textarea>
@@ -69,7 +86,14 @@
             <div class="video-grid" id="video-grid"></div>
         </section>
 
-        <!-- Response Section -->
+        <section id="rate-videos" class="mt-5">
+            <h2>Rate a Video</h2>
+            <textarea id="rate-jwt-token" class="form-control" rows="3" placeholder="Paste your JWT token"></textarea>
+            <input type="number" id="video-id" class="form-control" placeholder="Video ID">
+            <input type="number" id="video-rating" class="form-control" min="0" max="5" step="0.1" placeholder="Rating (0-5)">
+            <button onclick="rateVideo()" class="btn btn-primary">Rate Video</button>
+        </section>
+
         <section id="response" class="mt-5">
             <h2>Response</h2>
             <div id="response-output" class="response bg-light text-dark p-3"></div>
@@ -82,6 +106,50 @@
 
     <script>
         const baseUrl = "https://videoappunique123.azurewebsites.net/api";
+
+        async function registerUser() {
+            const username = document.getElementById("reg-username").value;
+            const password = document.getElementById("reg-password").value;
+            const role = document.getElementById("reg-role").value;
+
+            const response = await fetch(`${baseUrl}/users/register`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ username, password, role })
+            });
+            const data = await response.json();
+            document.getElementById("response-output").innerText = JSON.stringify(data, null, 2);
+        }
+
+        async function loginUser() {
+            const username = document.getElementById("login-username").value;
+            const password = document.getElementById("login-password").value;
+
+            const response = await fetch(`${baseUrl}/users/login`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ username, password })
+            });
+            const data = await response.json();
+            document.getElementById("response-output").innerText = JSON.stringify(data, null, 2);
+        }
+
+        async function uploadVideo() {
+            const token = document.getElementById("upload-jwt-token").value;
+            const title = document.getElementById("video-title").value;
+            const genre = document.getElementById("video-genre").value;
+
+            const response = await fetch(`${baseUrl}/videos`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "x-access-token": token
+                },
+                body: JSON.stringify({ title, genre })
+            });
+            const data = await response.json();
+            document.getElementById("response-output").innerText = JSON.stringify(data, null, 2);
+        }
 
         async function listVideos() {
             const token = document.getElementById("jwt-token").value;
@@ -99,47 +167,31 @@
                 const videoItem = document.createElement("div");
                 videoItem.classList.add("video-item");
                 videoItem.innerHTML = `
-                    <img src="https://via.placeholder.com/250x150" alt="Thumbnail">
+                    <img src="https://via.placeholder.com/150" alt="Thumbnail">
                     <h5>${video.title}</h5>
-                    <p>Genre: ${video.genre}</p>
+                    <p>${video.genre}</p>
                     <p>Rating: ${video.rating || "Not Rated"}</p>
-                    <div class="comment-section">
-                        <textarea placeholder="Add a comment" id="comment-${video.id}" class="form-control"></textarea>
-                        <button onclick="addComment(${video.id})" class="btn btn-secondary mt-2">Comment</button>
-                        <div id="comments-${video.id}" class="mt-3"></div>
-                    </div>
                 `;
                 videoGrid.appendChild(videoItem);
-
-                // Display existing comments
-                if (video.comments && video.comments.length > 0) {
-                    const commentsDiv = document.getElementById(`comments-${video.id}`);
-                    video.comments.forEach(comment => {
-                        const commentItem = document.createElement("p");
-                        commentItem.innerText = comment;
-                        commentsDiv.appendChild(commentItem);
-                    });
-                }
             });
         }
 
-        async function addComment(videoId) {
-            const token = document.getElementById("jwt-token").value;
-            const comment = document.getElementById(`comment-${videoId}`).value;
+        async function rateVideo() {
+            const token = document.getElementById("rate-jwt-token").value;
+            const id = document.getElementById("video-id").value;
+            const rating = document.getElementById("video-rating").value;
 
-            const response = await fetch(`${baseUrl}/videos/comment`, {
+            const response = await fetch(`${baseUrl}/videos/rate`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                     "x-access-token": token
                 },
-                body: JSON.stringify({ id: videoId, comment })
+                body: JSON.stringify({ id: parseInt(id), rating: parseFloat(rating) })
             });
+
             const data = await response.json();
             document.getElementById("response-output").innerText = JSON.stringify(data, null, 2);
-
-            // Refresh comments
-            listVideos();
         }
     </script>
 </body>
